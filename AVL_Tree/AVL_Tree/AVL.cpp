@@ -1,7 +1,5 @@
 #include "AVL.h"
 
-
-
 NODE* createNode(int data) {
     NODE* root = new NODE;
     root -> key = data;
@@ -38,19 +36,6 @@ void LRN(NODE* root) {
     cout << root->key << " ";
 } //postOrder
 
-
-NODE* Search(NODE* root, int x) {
-    if (root == NULL)
-        return NULL;
-    if (root->key == x)
-        return root;
-    else if (root->key > x)
-        return Search(root -> left, x);
-    else if (root->key < x)
-        return Search(root -> right, x);
-    return NULL;
-}
-
 int Height(NODE* root) {
     if (root==NULL)
         return 0;
@@ -75,96 +60,79 @@ void Insert(NODE* &root, int x) {
     if (root->key < x)
         Insert(root -> right, x);
     
-    root->bal = Height(root->left) - Height(root->right);
+    int balance = getBalance(root);
     
-    if(root->bal >= 2 && x < root->left->key)
+    if(balance > 1 && x < root->left->key)
         rightRotate(root);
-    if(root->bal >= 2 && x > root->left->key) {
+    
+    if(balance > 1 && x > root->left->key) {
         leftRotate(root->left);
         rightRotate(root);
     }
     
-    if(root->bal <= -2 && x > root->right->key)
+    if(balance < -1 && x > root->right->key)
         leftRotate(root);
     
-    if(root->bal <= -2 && x < root->right->key) {
+    if(balance < -1 && x < root->right->key) {
         rightRotate(root->right);
         leftRotate(root);
     }
 }
 
-NODE* findMax(NODE* root) {
-    if (root == NULL)
-        return NULL;
-    NODE* max = root;
-    
-    while (max != NULL) {
-        if (max -> right == NULL)
-            return max;
-        max = max -> right;
-    }
-    return max;
+NODE* findMinNode(NODE* &root) {
+    NODE* min = root;
+    while (min->left != NULL)
+        min = min->left;
+    return min;
 }
-
-int returnRoot(NODE* root) {
-    return root->key;
-} //check fuction
-
 
 void Remove(NODE* &root, int x) {
-    if (root==NULL)
-        return;
-    
-    else if (root->key > x)
-        Remove(root->left, x);
-    else if (root->key < x)
-        Remove(root->right, x);
+    if (root == NULL) return;
     else {
-        NODE *clone = root;
-        if (root->left == NULL)
-            root = root->right;
-        else if (root->right == NULL)
-            root = root->left;
+        if (root->key > x)
+            Remove(root->left, x);
+        
+        else if (root->key < x)
+            Remove(root->right, x);
+        
         else {
-            NODE *parent = root;
-            NODE *child = parent->left;
-            
-            while (child->right != NULL) {
-                parent = child;
-                child = child->right;
+            if (root->left == NULL) {
+                NODE* temp = root->right;
+                delete root;
+                root = temp;
             }
             
-            clone->key = child->key;
-            parent->right = child->left;
-            delete child;
+            else if (root->right == NULL) {
+                NODE*temp = root->left;
+                delete root;
+                root = temp;
+            }
+            
+            else {
+                NODE* min = findMinNode(root->right);
+                root->key = min->key;
+                Remove(root->right, min->key);
+            }
         }
     }
-}
-
-
-bool isBST(NODE* root) {
-    if (root == NULL)
-        return true;
     
-    if (root->left != NULL && root->left->key > root->key)
-        return false;
-    if (root->right != NULL && root->right->key < root->key)
-        return false;
-    if (isBST(root->left) == false || isBST(root->right) == false)
-        return false;
+    int balance = getBalance(root);
     
-    return true;
-}
-
-int countNODE(NODE* root) {
-    int count = 0;
+    if (balance > 1 && getBalance(root->left) >= 0)
+        return rightRotate(root);
     
-    if (root) {
-        count ++;
-        count += countNODE(root->left);
-        count += countNODE(root->right);
+    if (balance > 1 && getBalance(root->left) < 0) {
+        leftRotate(root->left);
+        rightRotate(root);
     }
-    return count;
+    
+    if (balance < -1 && getBalance(root->right) <= 0)
+        leftRotate(root);
+    
+    if (balance < -1 && getBalance(root->right) > 0) {
+        rightRotate(root->right);
+        leftRotate(root);
+    }
 }
 
 void leftRotate(NODE* &root) {
@@ -185,54 +153,8 @@ void rightRotate(NODE* &root) {
     root=p;
 }
 
-void RemoveAVL(NODE* &root, int x) {
-    if (root==NULL)
-        return;
-    
-    else if (root->key > x)
-        Remove(root->left, x);
-    else if (root->key < x)
-        Remove(root->right, x);
-    else {
-        NODE *clone = root;
-        if (root->left == NULL)
-            root = root->right;
-        else if (root->right == NULL)
-            root = root->left;
-        else {
-            NODE *parent = root;
-            NODE *child = parent->left;
-            
-            while (child->right != NULL) {
-                parent = child;
-                child = child->right;
-            }
-            clone->key = child->key;
-            parent->right = child->left;
-            delete child;
-        }
-    }
-    int balance = getBalance(root);
-    
-    if (balance > 1 && getBalance(root->left) >= 0)
-        return rightRotate(root);
-    
-    if (balance > 1 && getBalance(root->left) < 0)
-    {
-        leftRotate(root->left);
-        rightRotate(root);
-    }
-    
-    if (balance < -1 && getBalance(root->right) <= 0)
-        leftRotate(root);
-    
-    if (balance < -1 && getBalance(root->right) > 0)
-    {
-        rightRotate(root->right);
-        leftRotate(root);
-    }
-}
-
 int getBalance(NODE* root) {
+    if (root == NULL)
+        return 0;
     return Height(root->left) - Height(root->right);
 }

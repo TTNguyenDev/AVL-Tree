@@ -9,18 +9,7 @@
 #include "AVL.h"
 
 int main() {
-//    NODE *root = createNode(9);
-//
-//    Insert(root, 5);
-//    Insert(root, 10);
-//    Insert(root, 0);
-//    Insert(root, 6);
-//    Insert(root, 11);
-//    Insert(root, -1);
-//    Insert(root, 1);
-//    Insert(root, 2);
-    
-    
+
     NODE *root = createNode(40);
     Insert(root, 36);
     Insert(root, 50);
@@ -33,7 +22,18 @@ int main() {
     Insert(root, 65);
     
     NLR(root);
-    RemoveAVL(root, 45);
+    
+    Remove(root, 36);
+    Remove(root, 50);
+    Remove(root, 18);
+    Remove(root, 37);
+//    Remove(root, 8);
+//    Remove(root, 20);
+//    Remove(root, 45);
+//    Remove(root, 55);
+//    Remove(root, 65);
+//    Remove(root, 40);
+    
     cout << endl;
     NLR(root);
 }
