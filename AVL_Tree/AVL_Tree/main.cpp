@@ -21,19 +21,15 @@ int main() {
     Insert(root, 55);
     Insert(root, 65);
     
+    cout << "After Insert: ";
     NLR(root);
     
     Remove(root, 36);
     Remove(root, 50);
     Remove(root, 18);
     Remove(root, 37);
-//    Remove(root, 8);
-//    Remove(root, 20);
-//    Remove(root, 45);
-//    Remove(root, 55);
-//    Remove(root, 65);
-//    Remove(root, 40);
-    
-    cout << endl;
+
+    cout << "\nAfter Remove Nodes: ";
     NLR(root);
+    cout << endl;
 }
